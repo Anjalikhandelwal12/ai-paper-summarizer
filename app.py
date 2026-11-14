@@ -6,6 +6,7 @@ st.set_page_config(page_title="AI Paper Summarizer")
 st.title("📚 AI Research Paper Summarizer")
 st.write("Kuthla pan research paper upload kara, AI 1 minat madhe summary deil")
 
+# API Key - adhi Secrets madhun ghe, nasel tar user kadun ghe
 api_key = ""
 try:
     api_key = st.secrets["GROQ_API_KEY"]
@@ -29,6 +30,10 @@ if pdf and st.button("Summarize Kara"):
         text += page.get_text()
     text = text[:15000]
 
+    if not text.strip():
+        st.error("PDF madhe text sapadla nahi. Scanned PDF asel tar chalnar nahi.")
+        st.stop()
+
     prompt = f"""
     Ha research paper summarize kar simple language madhe:
     {text}
@@ -41,9 +46,13 @@ if pdf and st.button("Summarize Kara"):
     """
 
     with st.spinner("Reading paper..."):
-        res = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[{"role": "user", "content": prompt}]
-        )
-        st.success("Summary ready!")
-        st.write(res.choices[0].message.content)
+        try:
+            res = client.chat.completions.create(
+                model="llama-3.1-8b-instant",
+                messages=[{"role": "user", "content": prompt}]
+            )
+            st.success("Summary ready!")
+            st.write(res.choices[0].message.content)
+        except Exception as e:
+            st.error(f"Error ala: {e}")
+            st.info("Groq Key barobar ahe ka check kar. Streamlit Secrets madhe GROQ_API_KEY takli ahe ka?")
