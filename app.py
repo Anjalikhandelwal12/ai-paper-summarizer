@@ -48,7 +48,7 @@ if pdf and st.button("Summarize Kara"):
     with st.spinner("Reading paper..."):
         try:
             res = client.chat.completions.create(
-                model="llama-3.1-8b-instant",
+                model="openai/gpt-oss-20b",
                 messages=[{"role": "user", "content": prompt}]
             )
             st.success("Summary ready!")
